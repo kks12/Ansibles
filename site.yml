@@ -1,0 +1,100 @@
+# tasks file for ansible-cis-ubuntu-2204
+
+# ------------------------------------------------------------------------------
+
+- name: "PRE | run apt cache update"
+  ansible.builtin.apt:
+    force_apt_get: true
+    update_cache: true
+  changed_when: false
+
+# ------------------------------------------------------------------------------
+
+- name: "PRE | 1.4.1 | check the grub.cfg configuration"
+  ansible.builtin.stat:
+    path: /boot/grub/grub.cfg
+  register: cis_grub_cfg
+
+- name: "PRE | 1.4.1 | check the grub.conf configuration"
+  ansible.builtin.stat:
+    path: /boot/grub/grub.conf
+  register: cis_grub_conf
+
+- name: "PRE | 1.4.1 | check the menu.lst configuration"
+  ansible.builtin.stat:
+    path: "/boot/grub/menu.lst"
+  register: cis_menu_lst
+
+# ------------------------------------------------------------------------------
+
+- name: "PRE | 1.4.3 | check if root has password"
+  ansible.builtin.shell: "getent shadow | grep '^root:' | cut -d: -f2"
+  register: cis_current_root_password
+  changed_when: false
+  check_mode: false
+
+# ------------------------------------------------------------------------------
+
+- name: "PRE | 1.1.9 | check for 'autofs' service"
+  ansible.builtin.systemd:
+    name: autofs
+    state: started
+  register: service_status_autofs
+  changed_when: false
+  check_mode: false
+
+- name: "PRE | 1.5.3 | check for 'apport' service"
+  ansible.builtin.systemd:
+    name: apport
+    state: started
+  register: service_status_apport
+  changed_when: false
+  check_mode: false
+
+- name: "PRE | 1.8 | check for 'gdm3' service"
+  ansible.builtin.systemd:
+    name: gdm3
+    state: started
+  register: service_status_gdm3
+  changed_when: false
+  check_mode: false
+
+- name: "PRE | 2.1.1.1 | check for 'systemd-timesyncd' service"
+  ansible.builtin.systemd:
+    name: systemd-timesyncd
+    state: started
+  register: service_status_systemd_timesyncd
+  changed_when: false
+  check_mode: false
+
+- name: "PRE | 5.1 | check for 'cron' service"
+  ansible.builtin.systemd:
+    name: cron
+    state: started
+  register: service_status_cron
+  changed_when: false
+  check_mode: false
+
+- name: "PRE | 5.2 | check for 'ssh' service"
+  ansible.builtin.systemd:
+    name: ssh
+    state: started
+  register: service_status_ssh
+  changed_when: false
+  check_mode: false
+
+# ------------------------------------------------------------------------------
+
+- name: "PRE | 1.3.1, 2.2.15 | check if 'postfix' package is installed"
+  ansible.builtin.command: "dpkg -s postfix"
+  register: package_installed_postfix
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: "PRE | 1.5.2 | check if 'prelink' package is installed"
+  ansible.builtin.command: "dpkg -s prelink"
+  register: package_installed_prelink
+  changed_when: false
+  failed_when: false
+  check_mode: false
